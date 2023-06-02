@@ -1,10 +1,7 @@
 import { TransferAccounts } from './transfer-accounts';
-import { BalanceComponent } from './balance/balance.component';
 import { Injectable, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable } from 'rxjs/internal/Observable';
-import { map } from 'rxjs/internal/operators/map';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
 import { Account } from './account';
 import { take } from 'rxjs/internal/operators/take';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
