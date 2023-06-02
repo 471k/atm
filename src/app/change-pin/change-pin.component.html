@@ -1,0 +1,74 @@
+<header [menu]="menu"></header>
+
+<mat-grid-list cols="3" rowHeight="100px">
+  <form #f="ngForm" (ngSubmit)="submit(f.value)">    
+    <mat-grid-tile colspan="3">
+      <mat-form-field>
+        <mat-label>Current Pin:</mat-label>
+        <input
+          matInput
+          #currentPin="ngModel"
+          ngModel
+          pattern="[0-9]+"
+          minlength="6"
+          maxlength="10"
+          required
+          type="password"
+          name="currentPin"
+        />
+        
+        <mat-error *ngIf="currentPin.invalid && (currentPin.dirty || currentPin.touched)">
+            <span *ngIf="currentPin.errors?.['required']">Pin is required</span>
+            <span *ngIf="currentPin.errors?.['minlength']">Pin must be at least 6 digits long.</span>
+            <span *ngIf="currentPin.errors?.['maxlength']">Pin cannot exceed 10 digits.</span>
+            <span *ngIf="currentPin.errors?.['pattern']">Pin should contain only numbers.</span>
+          </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+      <mat-form-field>
+        <mat-label>New Pin:</mat-label>
+        <input
+          matInput
+          #newPin="ngModel"
+          ngModel
+          pattern="[0-9]+"
+          minlength="6"
+          maxlength="10"
+          required
+          name="newPin"
+          type="password"
+        />
+        
+        <mat-error *ngIf="newPin.invalid && (newPin.dirty || newPin.touched)">
+            <span *ngIf="newPin.errors?.['required']">Pin is required</span>
+            <span *ngIf="newPin.errors?.['minlength']">Pin must be at least 6 digits long.</span>
+            <span *ngIf="newPin.errors?.['maxlength']">Pin cannot exceed 10 digits.</span>
+            <span *ngIf="newPin.errors?.['pattern']">Pin should contain only numbers.</span>
+          </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+      <button 
+        [disabled]="!f.valid"
+        mat-raised-button
+        class="action-button" 
+        color="primary">Change Pin</button>
+    </mat-grid-tile>
+
+  </form>
+  
+  <mat-grid-tile>
+    <button 
+        routerLink="/dashboard" 
+        mat-raised-button 
+        type="button" 
+        class="transaction-button" 
+        color="accent">Back</button>
+  </mat-grid-tile>
+  
+  <mat-grid-tile></mat-grid-tile>
+  <mat-grid-tile></mat-grid-tile>
+</mat-grid-list>

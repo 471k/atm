@@ -1,0 +1,69 @@
+<header [menu]="menu"></header>
+
+<mat-grid-list cols="3" rowHeight="100px">
+  <form #f="ngForm" (submit)="deposit(f.value)">
+    <mat-grid-tile colspan="3">
+      <div *ngIf="account">
+        <h2>Your current balance: {{ account.balance | currency }}</h2>
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+      <mat-form-field floatLabel="always">
+        <mat-label>Amount</mat-label>
+        <input
+          matInput
+          [(ngModel)]="inputAmount"
+          name="amountInput"
+          #amountInput="ngModel"
+          ngModel
+          [disabled]="isAmountSet"
+          type="number"
+          min="0"
+          class="right-align"
+          placeholder="0"
+        />
+        <span class="presuffix" matTextPrefix>$&nbsp;</span>
+        <span class="presuffix" matTextSuffix>.00</span>
+        <mat-error *ngIf="amountInput.invalid && (amountInput.dirty || amountInput.touched)">
+            <span *ngIf="amountInput.errors?.['required']">Amount is required.</span>
+            <span *ngIf="amountInput.errors?.['min']">Amount cannot be less than 0.</span>
+          </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+      <button 
+        type="submit" 
+        mat-raised-button 
+        [disabled]="(!f.valid || amountInput.value == 0) && !isAmountSet"
+        class="action-button"
+        color="primary">Deposit</button>
+    </mat-grid-tile>
+
+  </form>
+
+  <mat-grid-tile>
+    <button
+      routerLink="/deposit"
+      mat-raised-button
+      class="navigation-button"
+      color="accent"
+
+    >
+      Back
+    </button>
+  </mat-grid-tile>
+
+  <mat-grid-tile></mat-grid-tile>
+  <mat-grid-tile>
+    <button
+      routerLink="/dashboard"
+      mat-raised-button
+      class="navigation-button"
+      color="warn"
+    >
+      Cancel
+    </button>
+  </mat-grid-tile>
+</mat-grid-list>

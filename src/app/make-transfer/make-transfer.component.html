@@ -1,0 +1,87 @@
+<header></header>
+<mat-grid-list cols="3" rowHeight="100px">
+  <form #f="ngForm" (submit)="transfer(f.value)">
+
+    <mat-grid-tile colspan="3">
+      <mat-form-field floatLabel="always">
+        <mat-label>Amount</mat-label>
+        <input
+          matInput
+          [(ngModel)]="inputAmount"
+          ngModel
+          #amountInput="ngModel"
+          name="amountInput"
+          [disabled]="isAmountSet"
+          required
+          class="right-align"
+          type="number"
+          [min]="0"
+        />
+        <span class="presuffix" matTextPrefix>$&nbsp;</span>
+        <span class="presuffix" matTextSuffix>.00</span>
+        <mat-error *ngIf="amountInput.invalid && (amountInput.dirty || amountInput.touched)">
+          <span *ngIf="(amountInput.value > account.balance)">Insufficient funds!</span>
+          <span *ngIf="amountInput.errors?.['required']">Amount is required.</span>
+          <span *ngIf="amountInput.errors?.['min']">Amount cannot be less than 0.</span>
+        </mat-error>
+        <mat-error >
+          
+        </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+
+
+    <mat-grid-tile colspan="3">
+      <mat-form-field>
+        <mat-label>Card Number</mat-label>
+        <input
+          matInput
+          ngModel
+          name="cardNumberInput"
+          #cardNumber="ngModel"
+          pattern="[0-9]+"
+          required
+          type="text"
+          class="right-align"
+        />
+        
+      <mat-error *ngIf="cardNumber.invalid && (cardNumber.dirty || cardNumber.touched)">
+        <span *ngIf="cardNumber.errors?.['required']">Card Number is required.</span>
+        <span *ngIf="cardNumber.errors?.['pattern']"> Card Number should contain only numbers.</span>
+        <span *ngIf="!isAccountFound">No account was found</span>
+      </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+        <button 
+          [disabled]="(!f.valid || amountInput.value == 0) && !isAmountSet || (amountInput.value > account.balance) || (cardNumber.value == false)"
+          mat-raised-button
+          class="action-button" color="primary">Make Transfer</button>
+    </mat-grid-tile>
+  </form>
+  <mat-grid-tile>
+    <button
+      type="button"
+      routerLink="/transfer"
+      mat-raised-button
+      class="transaction-button"
+      color="accent"
+    >
+      Back
+    </button>
+  </mat-grid-tile>
+
+  <mat-grid-tile></mat-grid-tile>
+
+  <mat-grid-tile>
+    <button
+      routerLink="/dashboard"
+      mat-raised-button
+      class="transaction-button"
+      color="warn"
+    >
+      Cancel
+    </button>
+  </mat-grid-tile>
+</mat-grid-list>

@@ -1,0 +1,37 @@
+.transaction-button,
+.navigation-button,
+.action-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: medium;
+}
+
+.transaction-button,
+.navigation-button {
+  height: 60%;
+  width: 100%;
+  /* font-family: Roboto, "Helvetica Neue", sans-serif;  */
+}
+
+.action-button {
+  height: 50%;
+  width: 40%;
+  /* font-family: Roboto, "Helvetica Neue", sans-serif;  */
+}
+.mat-mdc-form-field{
+    width: 40%;
+}
+
+/* .input-container mat-form-field + mat-form-field {
+    margin-left: 8px;
+  } */
+  
+  .right-align {
+    text-align: right;
+  }
+
+  .presuffix {
+    color: rgba(0, 0, 0, 0.38);
+  }
+

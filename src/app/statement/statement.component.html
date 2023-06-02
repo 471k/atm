@@ -1,0 +1,43 @@
+<header [menu]="menu"></header>
+<mat-grid-list cols="3" rowHeight="100px">
+
+  <mat-grid-tile colspan="3" rowspan="2">
+    <cdk-virtual-scroll-viewport itemSize="50" class="viewport">
+      <div *cdkVirtualFor="let transaction of transactions">
+        <div class="transaction-detail">
+          Amount: {{ transaction.amount | currency }}
+        </div>
+
+        <div *ngIf="transaction.to" class="transaction-detail">
+          To: {{ transaction.to }}
+        </div>
+
+        <div *ngIf="transaction.from" class="transaction-detail">
+          From: {{ transaction.from }}
+        </div>
+        <div class="transaction-detail">
+          Timestamp: {{ transaction.timestamp | date }}
+        </div>
+        <div class="transaction-detail">Type: {{ transaction.type }}</div>
+        <div class="transaction-detail">**********************************************</div>
+      </div>
+    </cdk-virtual-scroll-viewport>
+  </mat-grid-tile>
+  <mat-grid-tile colspan="3">
+    <button 
+    class="action-button" mat-raised-button color="primary">Print Statement</button>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+    <button
+      class="transaction-button"
+      routerLink="/dashboard"
+      mat-raised-button
+      color="accent"
+    >
+      Back
+    </button>
+  </mat-grid-tile>
+  <mat-grid-tile></mat-grid-tile>
+  <mat-grid-tile></mat-grid-tile>
+</mat-grid-list>

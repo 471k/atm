@@ -1,0 +1,23 @@
+<header [menu]="menu"></header>
+<mat-grid-list cols="3" rowHeight="100px">
+  <mat-grid-tile colspan="3"><h1>ATM</h1></mat-grid-tile>
+  <mat-grid-tile colspan="3">
+    <button 
+        routerLink="/login" 
+        mat-raised-button 
+        color="primary"
+        class="action-button">
+    Login
+    </button>
+  </mat-grid-tile>
+  <mat-grid-tile colspan="3">
+    <button 
+        class="action-button"
+        routerLink="/signup" 
+        mat-raised-button 
+        color="primary">
+      Sign Up
+    </button>
+  </mat-grid-tile>
+  <mat-grid-tile colspan="3"></mat-grid-tile>
+</mat-grid-list>

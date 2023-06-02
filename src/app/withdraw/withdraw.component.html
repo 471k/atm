@@ -1,0 +1,67 @@
+<header></header>
+<mat-grid-list cols="3" rowHeight="100px">
+  <form #f="ngForm" (submit)="withdraw(f.value)">
+    <mat-grid-tile colspan="3">
+      <div *ngIf="account">
+        <h2>Your current balance: {{ account.balance | currency }}</h2>
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+      <mat-form-field>
+        <mat-label>Amount</mat-label>
+        <input
+          matInput
+          [(ngModel)]="inputAmount"
+          name="amountInput"
+          #amountInput="ngModel"
+          ngModel
+          [disabled]="isAmountSet"
+          type="number"
+          class="right-align"
+          placeholder="0"
+          [min]="0"
+        />
+        <span class="presuffix" matTextPrefix>$&nbsp;</span>
+        <span class="presuffix" matTextSuffix>.00</span>
+        
+        <mat-error *ngIf="amountInput.invalid && (amountInput.dirty || amountInput.touched)">
+            <span *ngIf="amountInput.errors?.['required']">Amount is required.</span>
+            <span *ngIf="amountInput.errors?.['min']">Amount cannot be less than 0.</span>
+            <span *ngIf="amountInput.value > account.balance">Insufficient funds!</span>
+          </mat-error>
+      </mat-form-field>
+    </mat-grid-tile>
+    
+    <mat-grid-tile colspan="3">
+      <button 
+        type="submit"
+        [disabled]="(!f.valid || amountInput.value == 0) && !isAmountSet || amountInput.value > account.balance"
+        class="action-button" 
+        mat-raised-button 
+        color="primary">Withdraw</button>
+    </mat-grid-tile>
+  </form>
+  
+  <mat-grid-tile>
+    <button
+      routerLink="/withdrawal"
+      mat-raised-button
+      class="transaction-button"
+      color="accent"
+    >
+      Back
+    </button>
+  </mat-grid-tile>
+  <mat-grid-tile></mat-grid-tile>
+  <mat-grid-tile>
+    <button
+      routerLink="/dashboard"
+      mat-raised-button
+      class="transaction-button"
+      color="warn"
+    >
+      Cancel
+    </button>
+  </mat-grid-tile>
+</mat-grid-list>

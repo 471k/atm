@@ -1,0 +1,6 @@
+@import "/src/app/buttons.css";
+
+
+.mat-mdc-form-field{
+    width: 91%;
+}

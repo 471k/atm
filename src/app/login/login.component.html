@@ -1,0 +1,71 @@
+<header [menu]="menu"></header>
+<mat-grid-list cols="3" rowHeight="100px">
+  <form #f="ngForm" (ngSubmit)="submit(f)">
+    
+    <mat-grid-tile colspan="3">
+        <mat-form-field appearance="fill">
+          <mat-label> Enter your card number </mat-label>
+          <input
+            [(ngModel)]="credentials.cardNumber"
+            ngModel
+            required
+            name="cardNr"
+            #cardNr="ngModel"
+            id="cardNr"
+            pattern="[0-9]+"
+            matInput
+            type="text"
+          />
+          <mat-error *ngIf="cardNr.invalid && (cardNr.dirty || cardNr.touched)">
+            <span *ngIf="cardNr.errors?.['required']"> Card Number is required. </span>
+            <span *ngIf="cardNr.errors?.['pattern']">Card Number should contain only numbers.</span>
+          </mat-error>
+        </mat-form-field>
+        
+   
+    </mat-grid-tile>
+
+    <mat-grid-tile colspan="3">
+        <mat-form-field appearance="fill">
+          <mat-label> Enter your Pin </mat-label>
+          <input
+            [(ngModel)]="credentials.pin"
+            ngModel
+            required
+            name="pin"
+            #pin="ngModel"
+            minlength="6"
+            maxlength="10"
+            id="pin"
+            pattern="[0-9]+"
+            matInput
+            type="password"
+          />
+          <mat-error *ngIf="pin.invalid && (pin.dirty || pin.touched)">
+            <span *ngIf="pin.errors?.['required']">Pin is required</span>
+            <span *ngIf="pin.errors?.['minlength']">Pin must be at least 6 digits long.</span>
+            <span *ngIf="pin.errors?.['maxlength']">Pin cannot exceed 10 digits.</span>
+            <span *ngIf="pin.errors?.['pattern']">Pin should contain only numbers.</span>
+          </mat-error>
+        </mat-form-field>
+    </mat-grid-tile>
+    
+    <mat-grid-tile colspan="3">
+      <button 
+        type="submit" 
+        [disabled]="!f.valid"
+        class="action-button" 
+        mat-raised-button 
+        color="primary">Login</button>
+    </mat-grid-tile>
+
+    <mat-grid-tile>
+      <button routerLink="/" mat-raised-button class="transaction-button" color="accent">Back</button>
+    </mat-grid-tile>
+    <mat-grid-tile></mat-grid-tile>
+
+    <mat-grid-tile>
+      <a routerLink="/" mat-raised-button class="transaction-button" color="warn">Cancel</a>
+    </mat-grid-tile>
+  </form>
+</mat-grid-list>
