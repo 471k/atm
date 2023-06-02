@@ -12,8 +12,6 @@ import * as firebase from 'firebase/auth';
 import * as firebaseAuth from 'firebase/auth';
 import { AuthService } from './auth.service';
 import { Pin } from './pin';
-import { forkJoin } from 'rxjs/internal/observable/forkJoin';
-import { concat } from 'rxjs/internal/operators/concat';
 
 @Injectable({
   providedIn: 'root',
