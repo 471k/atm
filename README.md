@@ -2,7 +2,7 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.4.
 
-Working website hosted with Firebase Hosting can be found here: https://atmsimulator-81590.web.app
+Working ATM simulator hosted with Firebase Hosting can be found here: https://atmsimulator-81590.web.app
 
 ## Development server
 
