@@ -1,7 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; color: white;}
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* html, body { height: 100%; color: white;} */
+html, body { 
+  position: fixed;
+  width: 1000px;
+  height: 220px;
+  padding: 0px;
+  background-color: #262626;
+  color: white;
+  top: 25%;
+  left: 36%;
+  margin-top: -100px;
+  margin-left: -250px;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .container {
     margin: 100px;
