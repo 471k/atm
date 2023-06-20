@@ -19,8 +19,10 @@ export class LoginComponent {
   ) {}
 
   async submit(form: any) {
+    console.log('form: ', form)
     // if (this.validate(form)) {
-      let user = await this.authService.login(this.credentials);
+      // let user = await this.authService.login(this.credentials);
+      let user = await this.authService.login(form);
       if (user) this.router.navigate(['/dashboard']);
     // }
   }
