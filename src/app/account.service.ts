@@ -131,85 +131,6 @@ export class AccountService implements OnInit{
       .valueChanges();
   }
 
-  
- /*makeTransferFrom(transferAccounts: TransferAccounts) 
-  {
-
-    console.log('from this.transferAccounts: ', transferAccounts)
-    
-    const faTransactionId = this.db.createPushId();
-
-    //fetch current user's data including existing transactions for the user
-    this.db.object('/users/'+transferAccounts.fromAccountUid)
-    .valueChanges()
-    .pipe(take(1))
-    .subscribe((faUserData: any) =>
-    {
-      //get the existing transaction or an empty object
-      const faCurrentTransaction = faUserData.transactions || {};
-      
-      // calculate the new balance
-      const faNewBalance = faUserData.balance - transferAccounts.amount ;
-
-      //add the new transaction to the existing transaction data
-      const faUpdatedTransactions = {
-        ...faCurrentTransaction,
-        [faTransactionId]:{
-          type: 'Transfer',
-          amount: -transferAccounts.amount,
-          to: transferAccounts.toCardNumber,
-          timestamp: Date.now()
-        },
-      };
-
-      // update the balance and transactions in the database
-        this.db.object('/users/'+transferAccounts.fromAccountUid).update({
-        balance: faNewBalance,
-        transactions: faUpdatedTransactions
-      })
-    }
-    );
-      
-  }*/
-
-  /*makeTransferTo(transferAccounts: TransferAccounts)
-  {
-    console.log('to this.transferAccounts: ', transferAccounts);
-    
-
-    const taTransactionId = this.db.createPushId();
-    
-    // fetch users data
-    this.db.object('/users/' + transferAccounts.toAccountUid)
-    .valueChanges()
-    .pipe(take(1))
-    .subscribe((taUserData: any) =>{
-      //get existing transaction or an empty object
-      const taCurrentTransaction = taUserData.transactions || {};
-      
-      //calculate the new balance
-      const taNewBalance = taUserData.balance + transferAccounts.amount;
-      
-      //add the new transaction to the existing transaction data
-      const taUpdatedTransactions = {
-        ...taCurrentTransaction,
-        [taTransactionId]:{
-          type: 'Transfer',
-          amount: transferAccounts.amount,
-          from: transferAccounts.fromCardNumber,
-          timestamp: Date.now()
-        },
-      }
-
-      //update the balance and transactions in the database
-        this.db.object('/users/'+transferAccounts.toAccountUid).update({
-        balance: taNewBalance,
-        transactions: taUpdatedTransactions
-      });
-    });
-  }*/
-
-
   makeTransferFrom(transferAccounts: TransferAccounts) {
     this.makeTransfer(transferAccounts, 'subtract', 'from');
   }
@@ -218,7 +139,6 @@ export class AccountService implements OnInit{
     this.makeTransfer(transferAccounts, 'add', 'to');
   }
   
-
   makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) {
     const transactionId = this.db.createPushId();
     
@@ -242,7 +162,6 @@ export class AccountService implements OnInit{
           [transactionId]: {
             type: 'Transfer',
             amount: amountType == 'add' ? transferAccounts.amount : -transferAccounts.amount,
-            // [transactionType == 'to' ? 'from' : 'to']: transferAccounts[transactionType + 'CardNumber'],
             [transactionType == 'to' ? 'from' : 'to']: (transactionType == 'to' ? 'from' : 'to') ? transferAccounts.fromCardNumber : transferAccounts.toCardNumber,
             timestamp: Date.now()
           }
@@ -254,5 +173,5 @@ export class AccountService implements OnInit{
         });
       });
   }
-  
+
 }
