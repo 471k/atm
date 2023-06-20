@@ -18,37 +18,9 @@ export class LoginComponent {
     private router: Router
   ) {}
 
-  async submit(form: any) {
-    console.log('form: ', form)
-    // if (this.validate(form)) {
-      // let user = await this.authService.login(this.credentials);
-      let user = await this.authService.login(form);
-      if (user) this.router.navigate(['/dashboard']);
-    // }
+  async submit(form: any) 
+  {
+    let user = await this.authService.login(form);
+    if (user) this.router.navigate(['/dashboard']);
   }
-
-  // validate(form: any) {
-  //   console.log('form: ', form);
-
-  //   if (form.controls.cardNr.touched && form.controls.cardNr.invalid) {
-  //     this.openSnackBar('Enter a valid card number');
-  //     return false;
-  //   }
-
-  //   if (form.controls.pin.touched && form.controls.pin.invalid) {
-  //     this.openSnackBar('Pin is required');
-  //     return false;
-  //   }
-
-  //   if (!form.value.cardNr || !form.value.pin) {
-  //     this.openSnackBar('Enter credentials');
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
-  // openSnackBar(message: string) {
-  //   this.snackBar.open(message, 'OK', { duration: 5000 });
-  // }
 }

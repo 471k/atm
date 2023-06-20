@@ -132,7 +132,7 @@ export class AccountService implements OnInit{
   }
 
   
- makeTransferFrom(transferAccounts: TransferAccounts) 
+ /*makeTransferFrom(transferAccounts: TransferAccounts) 
   {
 
     console.log('from this.transferAccounts: ', transferAccounts)
@@ -170,9 +170,9 @@ export class AccountService implements OnInit{
     }
     );
       
-  }
+  }*/
 
-  makeTransferTo(transferAccounts: TransferAccounts)
+  /*makeTransferTo(transferAccounts: TransferAccounts)
   {
     console.log('to this.transferAccounts: ', transferAccounts);
     
@@ -207,8 +207,56 @@ export class AccountService implements OnInit{
         transactions: taUpdatedTransactions
       });
     });
+  }*/
+
+
+  makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) {
+    const transactionId = this.db.createPushId();
+    
+    let dbPath: string;
+
+    if(transactionType === 'to')
+      dbPath = '/users/' + transferAccounts.toAccountUid;
+    else{
+      dbPath = '/users/' + transferAccounts.fromAccountUid;
+    }
+    
+    this.db.object(dbPath)
+      .valueChanges()
+      .pipe(take(1))
+      .subscribe((userData: any) => {
+        const currentTransaction = userData.transactions || {};
+        const newBalance = amountType == 'add' ? userData.balance + transferAccounts.amount : userData.balance - transferAccounts.amount;
+        
+        const updatedTransactions = {
+          ...currentTransaction,
+          [transactionId]: {
+            type: 'Transfer',
+            amount: amountType == 'add' ? transferAccounts.amount : -transferAccounts.amount,
+            // [transactionType == 'to' ? 'from' : 'to']: transferAccounts[transactionType + 'CardNumber'],
+            [transactionType == 'to' ? 'from' : 'to']: (transactionType == 'to' ? 'from' : 'to') ? transferAccounts.fromCardNumber : transferAccounts.toCardNumber,
+            timestamp: Date.now()
+          }
+        };
+        
+        this.db.object(dbPath).update({
+          balance: newBalance,
+          transactions: updatedTransactions
+        });
+      });
   }
 
+  
+  
+  
+  makeTransferFrom(transferAccounts: TransferAccounts) {
+    this.makeTransfer(transferAccounts, 'subtract', 'from');
+  }
+  
+  makeTransferTo(transferAccounts: TransferAccounts) {
+    this.makeTransfer(transferAccounts, 'add', 'to');
+  }
+  
 
 
 }

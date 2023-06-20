@@ -32,8 +32,6 @@ export class BalanceComponent {
           // this.user.push( user)
           console.log(user)
          });
-
-        
       }
       else
       {
