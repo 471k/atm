@@ -210,6 +210,15 @@ export class AccountService implements OnInit{
   }*/
 
 
+  makeTransferFrom(transferAccounts: TransferAccounts) {
+    this.makeTransfer(transferAccounts, 'subtract', 'from');
+  }
+  
+  makeTransferTo(transferAccounts: TransferAccounts) {
+    this.makeTransfer(transferAccounts, 'add', 'to');
+  }
+  
+
   makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) {
     const transactionId = this.db.createPushId();
     
@@ -245,18 +254,5 @@ export class AccountService implements OnInit{
         });
       });
   }
-
   
-  
-  
-  makeTransferFrom(transferAccounts: TransferAccounts) {
-    this.makeTransfer(transferAccounts, 'subtract', 'from');
-  }
-  
-  makeTransferTo(transferAccounts: TransferAccounts) {
-    this.makeTransfer(transferAccounts, 'add', 'to');
-  }
-  
-
-
 }
