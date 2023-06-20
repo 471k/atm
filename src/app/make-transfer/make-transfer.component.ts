@@ -60,38 +60,45 @@ export class MakeTransferComponent implements OnInit {
 
 
   async transfer(form: any) {
-    console.log('form: ', form);
-    await this.getToAccountUid(form.cardNumberInput);
-  
-    this.transferAccounts.fromCardNumber = this.account.cardNumber;
-    this.transferAccounts.toCardNumber = form.cardNumberInput + this.suffix;
-    this.transferAccounts.fromAccountUid = this.account.uid;
-    this.transferAccounts.amount = this.inputAmount;
-  
-    console.log('2 this.transferAccounts: ', this.transferAccounts);
-    console.log('this.transferAccounts.toAccountUid: ', this.transferAccounts.toAccountUid);
-  
-    if (this.transferAccounts.toAccountUid !== 'not-found' && this.transferAccounts.toAccountUid !== '') {
-      if (this.isWithinBalance(this.inputAmount, this.account.balance)) {
-        let dialogRes = this.dialog.open(ConfirmationDialogComponent, {
-          width: '250px',
-        });
-  
-        dialogRes.afterClosed().subscribe((answer) => {
-          if (answer === 'yes') {
-            this.accountService.makeTransferFrom(this.transferAccounts);
-            this.accountService.makeTransferTo(this.transferAccounts);
-            this.router.navigate(['/dashboard']);
-          }
-        });
-      } else {
-        console.log('Insufficient funds!');
+    try {
+      console.log('form: ', form);
+      await this.getToAccountUid(form.cardNumberInput);
+      const { cardNumber, uid, balance } = this.account;
+      const { cardNumberInput } = form;
+      const toCardNumber = `${cardNumberInput}${this.suffix}`
+
+      this.transferAccounts.fromCardNumber = this.account.cardNumber;
+      this.transferAccounts.toCardNumber = form.cardNumberInput + this.suffix;
+      this.transferAccounts.fromAccountUid = this.account.uid;
+      this.transferAccounts.amount = this.inputAmount;
+
+      if (this.transferAccounts.toAccountUid === 'not-found' || !this.transferAccounts.toAccountUid) {
+        console.log('No account was found');
+        this.isAccountFound = false;
+        return;
       }
-    } else {
-      console.log('No account was found');
-      this.isAccountFound = false;
+      
+      if (!this.isWithinBalance(this.inputAmount, balance)) {
+        console.log('Insufficient funds!');
+        return;
+      }
+      
+      const dialogRes = await this.dialog.open(ConfirmationDialogComponent, { width: '250px' }).afterClosed().toPromise();
+      
+      if (dialogRes === 'yes') {
+        await Promise.all([
+          this.accountService.makeTransferFrom(this.transferAccounts),
+          this.accountService.makeTransferTo(this.transferAccounts),
+        ]);
+        
+        this.router.navigate(['/dashboard']);
+      }
+    } catch(e) {
+      console.error(e);
+      // handle error
     }
   }
+  
   
   async getToAccountUid(toAccountCardNumber: string) {
     toAccountCardNumber += this.suffix;
