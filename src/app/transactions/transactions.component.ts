@@ -6,18 +6,8 @@ import { AuthService } from '../auth.service';
 import {SelectionModel} from '@angular/cdk/collections';
 
 import { MatTableDataSource } from '@angular/material/table';
+import { iTransactions } from '../iTransactions';
 
-
-export interface iTransactions {
-  transactionId: string;
-  position: number;
-  receiver: string;
-  amount: number;
-  currentBalance: number;
-  sender: string;
-  type: string;
-  timestamp: number;
-}
 
 @Component({
   selector: 'transactions',
