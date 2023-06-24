@@ -240,42 +240,6 @@ export class AccountService implements OnInit{
 
 
 
-  /**
-   * 
-   * This code defines an `async` function named `revertTransactions` that accepts an array of 
-   * `selectedTransactions` as its parameter. The function iterates over each element of the array 
-   * and executes the following steps:
-   * 
-   * 1. Get the sender's account details by calling `getAccountByCardNr` method with the sender's card 
-   * number as its parameter. This method returns an observable that is converted to a promise 
-   * using `toPromise()` method. The `take(1)` operator ensures that the observable completes after 
-   * emitting the first value. The account details are stored in the `senderAccount` variable.
-   * 
-   * 2. Get the receiver's account details using the same method as in step 1, but with the receiver's 
-   * card number as its parameter. The account details are stored in the `receiverAccount` variable.
-   * 
-   * 3. Call the `updateBalance` function with the sender's user ID, receiver's user ID, and transaction 
-   * amount as its parameter. This function updates the sender's and receiver's balance by subtracting and 
-   * adding the transaction amount respectively.
-   */
-/*async revertTransactions(selectedTransactions: any[])
-{
-
-  console.log("selectedTransactions.length: ", selectedTransactions.length);
-
-  for (let i = 0; i < selectedTransactions.length; i++)
-  {
-    const selectedRow = selectedTransactions[i];
-    const senderAccount: any = await this.getAccountByCardNr(selectedRow.sender).pipe(take(1)).toPromise();
-    const receiverAccount: any = await this.getAccountByCardNr(selectedRow.receiver).pipe(take(1)).toPromise();
-    
-    await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, selectedRow.amount);
-    // console.log('selectedRow.transactionId: ', selectedRow.transactionId);
-    
-    await this.deleteTransaction(selectedRow.transactionId);
-  }
-}*/
-
 async revertTransactions(selectedTransactions: any[]) {
   console.log("selectedTransactions.length: ", selectedTransactions.length);
   let totalAmount = 0;
@@ -296,26 +260,6 @@ async deleteTransaction(transactionId: string)
   await this.db.object('/transactions/' + transactionId).remove();
 }
 
-/**
- * The `updateBalance` function gets called within the `revertTransactions` function. This function takes 
- * three parameters: `senderUid`, `receiverUid`, and `amount`. The function does the following:
- * 
- * 1. Get the sender's data and receiver's data from the Firebase Realtime Database.
- * 
- * 2. Calculate the new balance of the sender and the receiver by subtracting and adding the transaction 
- * amount respectively.
- * 
- * 3. Update the sender's and receiver's balance in the Firebase Realtime Database using the `update` method 
- * of the `DatabaseObject` instance returned by `this.db.object('/users/' + senderUid)` and 
- * `this.db.object('/users/' + receiverUid)`.
- * 
- * The `async/await` keywords are used to make the function wait for asynchronous operations to complete 
- * before continuing with the next step.
- * 
- * @param senderUid 
- * @param receiverUid 
- * @param amount 
- */
 async updateBalance(senderUid: string, receiverUid: string, amount: number)
 {
   const [senderData, receiverData]: any = await Promise.all([
