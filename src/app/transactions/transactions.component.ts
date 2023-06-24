@@ -33,19 +33,15 @@ export class TransactionsComponent implements OnInit{
   menu: string ='Transfer Transactions';
   transactions: any[]  = [];
   dataSource: any = new MatTableDataSource([]);
-  private subscription: Subscription | undefined;
 
   constructor( 
     private authService: AuthService,
     private accountService: AccountService )
     {
       
-    }
-
-    ngOnInit(): void {
       this.dataSource = new MatTableDataSource([]);
-      this.subscription = this.accountService.getTransactions().subscribe(transactions => {
-        this.transactions = []; // Reset the array
+      accountService.getTransactions().subscribe(transactions => {
+        this.transactions = []; 
         Object.values(transactions).forEach(item => {
           this.transactions.push(item)
         })
@@ -56,11 +52,25 @@ export class TransactionsComponent implements OnInit{
       });
     }
 
+    ngOnInit(): void {
+      // this.dataSource = new MatTableDataSource([]);
+      // this.subscription = this.accountService.getTransactions().subscribe(transactions => {
+      //   this.transactions = []; // Reset the array
+      //   Object.values(transactions).forEach(item => {
+      //     this.transactions.push(item)
+      //   })
+
+      //   console.log('transactions oninit: ', this.transactions);
+
+      //   this.dataSource = new MatTableDataSource(this.transactions);
+      // });
+    }
+
 
     ngOnDestroy(): void {
-      if (this.subscription) {
-        this.subscription.unsubscribe();
-      }
+      // if (this.subscription) {
+      //   this.subscription.unsubscribe();
+      // }
     }
   
 
@@ -96,28 +106,8 @@ export class TransactionsComponent implements OnInit{
 
   revertTransaction(selectedTransactions: any[])
   {
-    console.log('selectedTransactions: ', selectedTransactions)
-    console.log('this.transactions: ', this.transactions)
-        
     this.accountService.revertTransactions(selectedTransactions)
-
-    this.removeSelectedTransactions(selectedTransactions);
+    this.selection.clear();
   }
-
-  
-
-  removeSelectedTransactions(selectedTransactions: any[]) {
-    if (selectedTransactions.length === 0) {
-      return;
-    }
-  
-    for (let i = 0; i < selectedTransactions.length; i++) {
-      this.transactions = this.transactions.filter(
-        transaction => transaction.transactionId !== selectedTransactions[i].transactionId
-      );
-    }
-    console.log("removeSelectedTransactions: this.transactions: ", this.transactions);
-  }
-  
   
 }
