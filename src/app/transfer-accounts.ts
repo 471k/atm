@@ -3,5 +3,6 @@ export interface TransferAccounts {
   toAccountUid: string,
   fromCardNumber: string,
   toCardNumber: string,
-  amount: number
+  amount: number,
+  transactionId: string
 }

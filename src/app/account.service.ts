@@ -9,6 +9,8 @@ import * as firebase from 'firebase/auth';
 import * as firebaseAuth from 'firebase/auth';
 import { AuthService } from './auth.service';
 import { Pin } from './pin';
+import { map } from 'rxjs/internal/operators/map';
+import { switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -123,7 +125,7 @@ export class AccountService implements OnInit{
       .snapshotChanges();
   }
 
-  getReceiverAccount(inputCardNumber: string) {
+  getAccountByCardNr(inputCardNumber: string) {
     return this.db
       .list('/users/', (ref) =>
         ref.orderByChild('cardNumber').equalTo(inputCardNumber)
@@ -140,9 +142,11 @@ export class AccountService implements OnInit{
   }
   
   makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) {
-    const transactionId = this.db.createPushId();
+    console.log('this.transferAccounts: ', transferAccounts);
+    const recordId = this.db.createPushId();
     
     let dbPath: string;
+    
 
     if(transactionType === 'to')
       dbPath = '/users/' + transferAccounts.toAccountUid;
@@ -159,10 +163,12 @@ export class AccountService implements OnInit{
         
         const updatedTransactions = {
           ...currentTransaction,
-          [transactionId]: {
+          [recordId]: {
             type: 'Transfer',
             amount: amountType == 'add' ? transferAccounts.amount : -transferAccounts.amount,
-            [transactionType == 'to' ? 'from' : 'to']: (transactionType == 'to' ? 'from' : 'to') ? transferAccounts.fromCardNumber : transferAccounts.toCardNumber,
+            sender: transferAccounts.fromCardNumber,
+            receiver: transferAccounts.toCardNumber,
+            transactionId: transferAccounts.transactionId,
             timestamp: Date.now()
           }
         };
@@ -171,7 +177,141 @@ export class AccountService implements OnInit{
           balance: newBalance,
           transactions: updatedTransactions
         });
+
       });
   }
+
+  updateTransactions(transferAccounts: TransferAccounts)
+  {
+
+    
+    let dbPathT: string;
+    
+    dbPathT = '/transactions/';
+    
+    const recordId = this.db.createPushId();
+    
+    
+    this.db.object(dbPathT).update({
+      [recordId]: {
+        type: 'Transfer',
+        amount: transferAccounts.amount,
+        sender: transferAccounts.fromCardNumber,
+        receiver: transferAccounts.toCardNumber,
+        timestamp: Date.now()            
+      }
+    });
+  }
+
+
+
+  getTransactions(): Observable<any[]> 
+  {
+    return this.db.list('/transactions').snapshotChanges().pipe(
+      map((transactions) => {
+        console.log('transactions11: ', transactions);
+        // Combine all the transactions from all the users into one object
+        let transactionsObj: any = {};
+
+        transactions.forEach((transaction) => {
+          console.log('transaction: ', transaction);
+          
+          if (transaction.payload.exists()) 
+          {
+            let key: any = transaction.payload.key;
+            let data: any = transaction.payload.val();
+            console.log('key: ', key);
+            console.log('data: ', data);
+
+            let type = data.type;
+            console.log('type: ', type);
+            if(type === 'Transfer') {
+              console.log("if type transfer: ", data);
+              data['transactionId'] = key;
+              transactionsObj[key] = data;
+            }
+          }
+        });
+        return transactionsObj;
+      })
+    );
+  }
+
+
+
+  /**
+   * 
+   * This code defines an `async` function named `revertTransactions` that accepts an array of 
+   * `selectedTransactions` as its parameter. The function iterates over each element of the array 
+   * and executes the following steps:
+   * 
+   * 1. Get the sender's account details by calling `getAccountByCardNr` method with the sender's card 
+   * number as its parameter. This method returns an observable that is converted to a promise 
+   * using `toPromise()` method. The `take(1)` operator ensures that the observable completes after 
+   * emitting the first value. The account details are stored in the `senderAccount` variable.
+   * 
+   * 2. Get the receiver's account details using the same method as in step 1, but with the receiver's 
+   * card number as its parameter. The account details are stored in the `receiverAccount` variable.
+   * 
+   * 3. Call the `updateBalance` function with the sender's user ID, receiver's user ID, and transaction 
+   * amount as its parameter. This function updates the sender's and receiver's balance by subtracting and 
+   * adding the transaction amount respectively.
+   */
+  async revertTransactions(selectedTransactions: any[])
+{
+  for (let i = 0; i < selectedTransactions.length; i++)
+  {
+    const selectedRow = selectedTransactions[i];
+    const senderAccount: any = await this.getAccountByCardNr(selectedRow.sender).pipe(take(1)).toPromise();
+    const receiverAccount: any = await this.getAccountByCardNr(selectedRow.receiver).pipe(take(1)).toPromise();
+    
+    await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, selectedRow.amount);
+    console.log('selectedRow.transactionId: ', selectedRow.transactionId);
+    
+    await this.deleteTransaction(selectedRow.transactionId);
+  }
+}
+
+
+async deleteTransaction(transactionId: string)
+{
+  await this.db.object('/transactions/' + transactionId).remove();
+}
+
+/**
+ * The `updateBalance` function gets called within the `revertTransactions` function. This function takes 
+ * three parameters: `senderUid`, `receiverUid`, and `amount`. The function does the following:
+ * 
+ * 1. Get the sender's data and receiver's data from the Firebase Realtime Database.
+ * 
+ * 2. Calculate the new balance of the sender and the receiver by subtracting and adding the transaction 
+ * amount respectively.
+ * 
+ * 3. Update the sender's and receiver's balance in the Firebase Realtime Database using the `update` method 
+ * of the `DatabaseObject` instance returned by `this.db.object('/users/' + senderUid)` and 
+ * `this.db.object('/users/' + receiverUid)`.
+ * 
+ * The `async/await` keywords are used to make the function wait for asynchronous operations to complete 
+ * before continuing with the next step.
+ * 
+ * @param senderUid 
+ * @param receiverUid 
+ * @param amount 
+ */
+async updateBalance(senderUid: string, receiverUid: string, amount: number)
+{
+  const [senderData, receiverData]: any = await Promise.all([
+    this.db.object('/users/' + senderUid).valueChanges().pipe(take(1)).toPromise(),
+    this.db.object('/users/' + receiverUid).valueChanges().pipe(take(1)).toPromise()
+  ]);
+
+  const newSenderBalance = senderData.balance + amount;
+  const newReceiverBalance = receiverData.balance - amount;
+
+  await Promise.all([
+    this.db.object('/users/' + senderUid).update({ balance: newSenderBalance }),
+    this.db.object('/users/' + receiverUid).update({ balance: newReceiverBalance })
+  ]);
+}
 
 }

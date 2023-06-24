@@ -24,7 +24,7 @@ export class AuthService {
     this.user$ = afAuth.authState;
   }
 
-  login(credentials: any) {
+  login(credentials: any): Promise<firebase.auth.UserCredential>{
 
     credentials.cardNumber += this.suffix;
     

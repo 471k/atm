@@ -1,0 +1,21 @@
+@import "/src/app/buttons.css";
+
+.viewport {
+    height: 100%;
+    width: 150%;
+    border: 1px solid rgb(0, 103, 132);
+  }
+  table {
+    width: 100%;
+  }
+  .table-dark {
+    /* background-color: #343a40; */
+    background-color: #006784;
+    color: #fff;
+  }
+  
+  .table-dark th,
+  .table-dark td {
+    color: #fff;
+  }
+  

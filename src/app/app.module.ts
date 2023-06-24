@@ -22,6 +22,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatListModule } from '@angular/material/list';
+
+
+
 
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -42,6 +48,8 @@ import { MakeTransferComponent } from './make-transfer/make-transfer.component';
 import { AuthGuard } from './auth-guard.service';
 import { MonetaryOperationsComponent } from './monetary-operations/monetary-operations.component';
 import { HeaderComponent } from './header/header.component';
+import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
+import { TransactionsComponent } from './transactions/transactions.component';
 
 
 
@@ -64,7 +72,9 @@ import { HeaderComponent } from './header/header.component';
     TransferComponent,
     MakeTransferComponent,
     MonetaryOperationsComponent,
-    HeaderComponent
+    HeaderComponent,
+    AdminDashboardComponent,
+    TransactionsComponent
   ],
   imports: [
     BrowserModule,
@@ -82,6 +92,9 @@ import { HeaderComponent } from './header/header.component';
     MatSnackBarModule,
     ScrollingModule,
     MatIconModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatListModule,
 
     //routing
     RouterModule.forRoot([
@@ -146,6 +159,14 @@ import { HeaderComponent } from './header/header.component';
         path: 'transfer',
         component: TransferComponent,
         canActivate: [AuthGuard]
+      },
+      {
+        path: 'admin-dashboard',
+        component: AdminDashboardComponent
+      },
+      {
+        path: 'transactions',
+        component: TransactionsComponent
       }
     ])
   ],

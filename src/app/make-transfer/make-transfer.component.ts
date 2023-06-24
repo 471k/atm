@@ -9,6 +9,7 @@ import { Observable, switchMap, take } from 'rxjs';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { AuthService } from '../auth.service';
 import { TransferAccounts } from '../transfer-accounts';
+import { AngularFireDatabase } from '@angular/fire/compat/database';
 
 @Component({
   selector: 'app-make-transfer',
@@ -29,6 +30,7 @@ export class MakeTransferComponent implements OnInit {
     fromCardNumber: '',
     toCardNumber: '',
     amount: 0,
+    transactionId: ''
   };
 
   account!: Account;
@@ -41,7 +43,8 @@ export class MakeTransferComponent implements OnInit {
     private accountService: AccountService,
     private afAuth: AngularFireAuth,
     private dialog: MatDialog,
-    private authService: AuthService
+    private authService: AuthService,
+    private db: AngularFireDatabase
   ) {
     this.route.params
       .pipe(
@@ -65,12 +68,17 @@ export class MakeTransferComponent implements OnInit {
       await this.getToAccountUid(form.cardNumberInput);
       const { cardNumber, uid, balance } = this.account;
       const { cardNumberInput } = form;
-      const toCardNumber = `${cardNumberInput}${this.suffix}`
+      const toCardNumber = `${cardNumberInput}${this.suffix}`;
+      const transactionId = this.db.createPushId()
+
 
       this.transferAccounts.fromCardNumber = this.account.cardNumber;
       this.transferAccounts.toCardNumber = form.cardNumberInput + this.suffix;
       this.transferAccounts.fromAccountUid = this.account.uid;
       this.transferAccounts.amount = this.inputAmount;
+      this.transferAccounts.transactionId = transactionId;
+
+      
 
       if (this.transferAccounts.toAccountUid === 'not-found' || !this.transferAccounts.toAccountUid) {
         console.log('No account was found');
@@ -89,6 +97,7 @@ export class MakeTransferComponent implements OnInit {
         await Promise.all([
           this.accountService.makeTransferFrom(this.transferAccounts),
           this.accountService.makeTransferTo(this.transferAccounts),
+          this.accountService.updateTransactions(this.transferAccounts),
         ]);
         
         this.router.navigate(['/dashboard']);
@@ -106,7 +115,7 @@ export class MakeTransferComponent implements OnInit {
     console.log("getToAccountUid was called");
     
     try {
-      const data: any = await this.accountService.getReceiverAccount(toAccountCardNumber).pipe(take(1)).toPromise();
+      const data: any = await this.accountService.getAccountByCardNr(toAccountCardNumber).pipe(take(1)).toPromise();
       
       if (data.length === 0) {
         this.transferAccounts.toAccountUid = 'not-found';
