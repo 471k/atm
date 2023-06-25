@@ -11,12 +11,11 @@ import { AppComponent } from './app.component';
 import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { HomeComponent } from './home/home.component';
-import { LanguageSelectionComponent } from './language-selection/language-selection.component';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { BalanceComponent } from './balance/balance.component';
-import { WithdrawalComponent } from './withdrawal/withdrawal.component';
+import { HomeComponent } from './core/components/home/home.component';
+import { LoginComponent } from './core/components/login/login.component';
+import { DashboardComponent } from './atm/components/dashboard/dashboard.component';
+import { BalanceComponent } from './atm/components/balance/balance.component';
+import { WithdrawalComponent } from './atm/components/withdrawal/withdrawal.component';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -27,29 +26,27 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatListModule } from '@angular/material/list';
 
 
-
-
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AuthService } from './auth.service';
-import { SignupComponent } from './signup/signup.component';
-import { UserService } from './user.service';
-import { WithdrawComponent } from './withdraw/withdraw.component';
-import { AccountService } from './account.service';
-import { DepositComponent } from './deposit/deposit.component';
-import { MakeDepositComponent } from './make-deposit/make-deposit.component';
+import { AuthService } from './shared/services/auth.service';
+import { SignupComponent } from './core/components/signup/signup.component';
+import { UserService } from './shared/services/user.service';
+import { WithdrawComponent } from './atm/components/withdraw/withdraw.component';
+import { AccountService } from './shared/services/account.service';
+import { DepositComponent } from './atm/components/deposit/deposit.component';
+import { MakeDepositComponent } from './atm/components/make-deposit/make-deposit.component';
 import { MatDialogModule} from '@angular/material/dialog';
-import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
-import { ChangePinComponent } from './change-pin/change-pin.component';
-import { StatementComponent } from './statement/statement.component';
+import { ConfirmationDialogComponent } from './shared/components/confirmation-dialog/confirmation-dialog.component';
+import { ChangePinComponent } from './atm/components/change-pin/change-pin.component';
+import { StatementComponent } from './atm/components/statement/statement.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { TransferComponent } from './transfer/transfer.component';
-import { MakeTransferComponent } from './make-transfer/make-transfer.component';
-import { AuthGuard } from './auth-guard.service';
-import { MonetaryOperationsComponent } from './monetary-operations/monetary-operations.component';
-import { HeaderComponent } from './header/header.component';
-import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
-import { TransactionsComponent } from './transactions/transactions.component';
+import { TransferComponent } from './atm/components/transfer/transfer.component';
+import { MakeTransferComponent } from './atm/components/make-transfer/make-transfer.component';
+import { AuthGuard } from './shared/services/auth-guard.service';
+import { MonetaryOperationsComponent } from './shared/components/monetary-operations/monetary-operations.component';
+import { HeaderComponent } from './core/components/header/header.component';
+import { AdminDashboardComponent } from './admin/components/admin-dashboard/admin-dashboard.component';
+import { TransactionsComponent } from './admin/components/transactions/transactions.component';
 
 
 
@@ -57,7 +54,6 @@ import { TransactionsComponent } from './transactions/transactions.component';
   declarations: [
     AppComponent,
     HomeComponent,
-    LanguageSelectionComponent,
     LoginComponent,
     DashboardComponent,
     BalanceComponent,
