@@ -22,42 +22,20 @@ export class TransactionsComponent implements OnInit{
   constructor( 
     private authService: AuthService,
     private accountService: AccountService )
-    {
-      
-      this.dataSource = new MatTableDataSource([]);
-      accountService.getTransactions().subscribe(transactions => {
+    {}
+
+    ngOnInit(): void {
+    
+      this.accountService.getTransactions().subscribe(transactions => {
+
         this.transactions = []; 
         Object.values(transactions).forEach(item => {
           this.transactions.push(item)
         })
 
-        console.log('transactions: ', this.transactions);
-
         this.dataSource = new MatTableDataSource(this.transactions);
       });
     }
-
-    ngOnInit(): void {
-      // this.dataSource = new MatTableDataSource([]);
-      // this.subscription = this.accountService.getTransactions().subscribe(transactions => {
-      //   this.transactions = []; // Reset the array
-      //   Object.values(transactions).forEach(item => {
-      //     this.transactions.push(item)
-      //   })
-
-      //   console.log('transactions oninit: ', this.transactions);
-
-      //   this.dataSource = new MatTableDataSource(this.transactions);
-      // });
-    }
-
-
-    ngOnDestroy(): void {
-      // if (this.subscription) {
-      //   this.subscription.unsubscribe();
-      // }
-    }
-  
 
     displayedColumns: string[] = 
     ['select', 'transactionId', 'type', 'sender', 'amount', 'receiver', 'timestamp'];
@@ -91,6 +69,8 @@ export class TransactionsComponent implements OnInit{
 
   revertTransaction(selectedTransactions: any[])
   {
+    if(selectedTransactions.length === 0) return;
+
     this.accountService.revertTransactions(selectedTransactions)
     this.selection.clear();
   }

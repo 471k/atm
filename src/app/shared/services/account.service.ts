@@ -209,25 +209,21 @@ export class AccountService implements OnInit{
   {
     return this.db.list('/transactions').snapshotChanges().pipe(
       map((transactions) => {
-        // console.log('transactions11: ', transactions);
+        
         // Combine all the transactions from all the users into one object
         let transactionsObj: any = {};
 
         transactions.forEach((transaction) => {
-          // console.log('transaction: ', transaction);
           
           if (transaction.payload.exists()) 
           {
             let key: any = transaction.payload.key;
             let data: any = transaction.payload.val();
-            // console.log('key: ', key);
-            // console.log('data: ', data);
-
+            
             let type = data.type;
-            // console.log('type: ', type);
+            
             if(type === 'Transfer') 
             {
-              // console.log("if type transfer: ", data);
               data['transactionId'] = key;
               transactionsObj[key] = data;
             }
@@ -240,19 +236,22 @@ export class AccountService implements OnInit{
 
 
 
-async revertTransactions(selectedTransactions: any[]) {
-  console.log("selectedTransactions.length: ", selectedTransactions.length);
+async revertTransactions(selectedTransactions: any[]) 
+{
   let totalAmount = 0;
-  for (let i = 0; i < selectedTransactions.length; i++) {
+
+  for (let i = 0; i < selectedTransactions.length; i++) 
+  {
     const selectedRow = selectedTransactions[i];
-    totalAmount += selectedRow.amount;
+    
+    const senderAccount: any = await this.getAccountByCardNr(selectedRow.sender).pipe(take(1)).toPromise();
+    const receiverAccount: any = await this.getAccountByCardNr(selectedRow.receiver).pipe(take(1)).toPromise();
+
+    await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, selectedRow.amount);
+
     await this.deleteTransaction(selectedRow.transactionId);
   }
-  const senderAccount: any = await this.getAccountByCardNr(selectedTransactions[0].sender).pipe(take(1)).toPromise();
-  const receiverAccount: any = await this.getAccountByCardNr(selectedTransactions[0].receiver).pipe(take(1)).toPromise();
-  await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, totalAmount);
 }
-
 
 
 async deleteTransaction(transactionId: string)
