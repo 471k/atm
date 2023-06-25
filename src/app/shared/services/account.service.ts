@@ -15,7 +15,7 @@ import { switchMap } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class AccountService implements OnInit{
+export class AccountService implements OnInit {
   balance!: number;
   account!: Account;
   currentUser$: Observable<firebase.User | any>;
@@ -34,10 +34,10 @@ export class AccountService implements OnInit{
     this.currentUser$ = afAuth.authState;
   }
 
-  ngOnInit(){  
-  }
+  ngOnInit() {}
 
-  createAccount(data: any) {
+  createAccount(data: any) 
+  {
     this.db.object('/users/' + data.uid).update({
       cardNumber: data.cardNumber,
       balance: data.balance,
@@ -46,51 +46,53 @@ export class AccountService implements OnInit{
     });
   }
 
-  getAccountByUserId(uid: string | undefined): Observable<any> {
+  getAccountByUserId(uid: string | undefined): Observable<any> 
+  {
     return this.db.object('/users/' + uid).valueChanges();
   }
 
-  withdraw(account: Account, inputAmount: number) {
+  withdraw(account: Account, inputAmount: number) 
+  {
     this.updateAccount(account.uid, -inputAmount, 'Withdrawal');
   }
 
-  deposit(account: Account, inputAmount: number) {
+  deposit(account: Account, inputAmount: number) 
+  {
     this.updateAccount(account.uid, inputAmount, 'Deposit');
   }
 
-  updateAccount(uid: string, inputAmount: number, transactionType: string) {
+  updateAccount(uid: string, inputAmount: number, transactionType: string) 
+  {
     const transactionId = this.db.createPushId();
 
     // fetch the current user's data including the existing transactions
-    this.db
-      .object('/users/' + uid)
-      .valueChanges()
-      .pipe(take(1))
-      .subscribe((userData: any) => {
-        const currentTransactions = userData.transactions || {}; // Get the existing transactions or an empty object if none exists
-
-        // calculate the new balance
-        const newBalance = userData.balance + inputAmount;
-
-        // add the new transaction to the existing transaction data
-        const updatedTransactions = {
-          ...currentTransactions,
-          [transactionId]: {
-            type: transactionType,
-            amount: inputAmount,
-            timestamp: Date.now(),
-          },
-        };
-
-        // Update the balance and transactions in the database
-        this.db.object('/users/' + uid).update({
-          balance: newBalance,
-          transactions: updatedTransactions,
-        });
+    this.db.object('/users/' + uid).valueChanges().pipe(take(1)).subscribe((userData: any) => 
+    {
+      const currentTransactions = userData.transactions || {}; // Get the existing transactions or an empty object if none exists
+      
+      // calculate the new balance
+      const newBalance = userData.balance + inputAmount;
+      
+      // add the new transaction to the existing transaction data
+      const updatedTransactions = {
+        ...currentTransactions,
+        [transactionId]: {
+          type: transactionType,
+          amount: inputAmount,
+          timestamp: Date.now(),
+        },
+      };
+      
+      // Update the balance and transactions in the database
+      this.db.object('/users/' + uid).update({
+        balance: newBalance,
+        transactions: updatedTransactions,
       });
+    });
   }
 
-  changePin() {
+  changePin() 
+  {
     let currentuser = this.authService.user$;
     let email: any;
 
@@ -102,10 +104,9 @@ export class AccountService implements OnInit{
           email,
           this.getPin.pin.currentPin
         );
-        cu?.reauthenticateWithCredential(credential)
-          .then(() => {
-            cu.updatePassword(this.getPin.pin.newPin)
-              .then(() => {
+        cu?.reauthenticateWithCredential(credential).then(() => {
+            cu.updatePassword(this.getPin.pin.newPin).then(() => 
+            {
                 console.log('Password changed successfully!');
               })
               .catch((error) => {
@@ -119,13 +120,15 @@ export class AccountService implements OnInit{
     });
   }
 
-  getStatement(user: firebaseAuth.User | null) {
+  getStatement(user: firebaseAuth.User | null) 
+  {
     return this.db
       .object('/users/' + user?.uid + '/transactions')
       .snapshotChanges();
   }
 
-  getAccountByCardNr(inputCardNumber: string) {
+  getAccountByCardNr(inputCardNumber: string) 
+  {
     return this.db
       .list('/users/', (ref) =>
         ref.orderByChild('cardNumber').equalTo(inputCardNumber)
@@ -133,34 +136,34 @@ export class AccountService implements OnInit{
       .valueChanges();
   }
 
-  makeTransferFrom(transferAccounts: TransferAccounts) {
+  makeTransferFrom(transferAccounts: TransferAccounts) 
+  {
     this.makeTransfer(transferAccounts, 'subtract', 'from');
   }
-  
-  makeTransferTo(transferAccounts: TransferAccounts) {
+
+  makeTransferTo(transferAccounts: TransferAccounts) 
+  {
     this.makeTransfer(transferAccounts, 'add', 'to');
   }
-  
-  makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) {
+
+  makeTransfer(transferAccounts: TransferAccounts, amountType: string, transactionType: string) 
+  {
     console.log('this.transferAccounts: ', transferAccounts);
     const recordId = this.db.createPushId();
-    
-    let dbPath: string;
-    
 
-    if(transactionType === 'to')
+    let dbPath: string;
+
+    if (transactionType === 'to')
       dbPath = '/users/' + transferAccounts.toAccountUid;
-    else{
+    else {
       dbPath = '/users/' + transferAccounts.fromAccountUid;
     }
-    
-    this.db.object(dbPath)
-      .valueChanges()
-      .pipe(take(1))
-      .subscribe((userData: any) => {
-        const currentTransaction = userData.transactions || {};
-        const newBalance = amountType == 'add' ? userData.balance + transferAccounts.amount : userData.balance - transferAccounts.amount;
-        
+
+    this.db.object(dbPath).valueChanges().pipe(take(1)).subscribe((userData: any) => 
+    {
+      const currentTransaction = userData.transactions || {};
+      const newBalance = amountType == 'add' ? userData.balance + transferAccounts.amount : userData.balance - transferAccounts.amount;
+
         const updatedTransactions = {
           ...currentTransaction,
           [recordId]: {
@@ -169,52 +172,46 @@ export class AccountService implements OnInit{
             sender: transferAccounts.fromCardNumber,
             receiver: transferAccounts.toCardNumber,
             transactionId: transferAccounts.transactionId,
-            timestamp: Date.now()
-          }
+            timestamp: Date.now(),
+          },
         };
-        
+
         this.db.object(dbPath).update({
           balance: newBalance,
-          transactions: updatedTransactions
+          transactions: updatedTransactions,
         });
-
       });
   }
 
-  updateTransactions(transferAccounts: TransferAccounts)
+  updateTransactions(transferAccounts: TransferAccounts) 
   {
-
-    
     let dbPathT: string;
-    
+
     dbPathT = '/transactions/';
-    
+
     const recordId = this.db.createPushId();
-    
-    
+
     this.db.object(dbPathT).update({
       [recordId]: {
         type: 'Transfer',
         amount: transferAccounts.amount,
         sender: transferAccounts.fromCardNumber,
         receiver: transferAccounts.toCardNumber,
-        timestamp: Date.now()            
-      }
+        timestamp: Date.now(),
+      },
     });
   }
-
-
 
   getTransactions(): Observable<any[]> 
   {
     return this.db.list('/transactions').snapshotChanges().pipe(
-      map((transactions) => {
-        
+      map((transactions) => 
+      {
         // Combine all the transactions from all the users into one object
         let transactionsObj: any = {};
-
-        transactions.forEach((transaction) => {
-          
+        
+        transactions.forEach((transaction) => 
+        {
           if (transaction.payload.exists()) 
           {
             let key: any = transaction.payload.key;
@@ -222,7 +219,7 @@ export class AccountService implements OnInit{
             
             let type = data.type;
             
-            if(type === 'Transfer') 
+            if (type === 'Transfer') 
             {
               data['transactionId'] = key;
               transactionsObj[key] = data;
@@ -231,48 +228,49 @@ export class AccountService implements OnInit{
         });
         return transactionsObj;
       })
-    );
+      );
   }
 
-
-
-async revertTransactions(selectedTransactions: any[]) 
-{
-  let totalAmount = 0;
-
-  for (let i = 0; i < selectedTransactions.length; i++) 
+  async revertTransactions(selectedTransactions: any[]) 
   {
-    const selectedRow = selectedTransactions[i];
-    
-    const senderAccount: any = await this.getAccountByCardNr(selectedRow.sender).pipe(take(1)).toPromise();
-    const receiverAccount: any = await this.getAccountByCardNr(selectedRow.receiver).pipe(take(1)).toPromise();
+    let totalAmount = 0;
 
-    await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, selectedRow.amount);
+    for (let i = 0; i < selectedTransactions.length; i++) {
+      const selectedRow = selectedTransactions[i];
 
-    await this.deleteTransaction(selectedRow.transactionId);
+      const senderAccount: any = await this.getAccountByCardNr(selectedRow.sender).pipe(take(1)).toPromise();
+      const receiverAccount: any = await this.getAccountByCardNr(selectedRow.receiver).pipe(take(1)).toPromise();
+
+      await this.updateBalance(senderAccount[0].uid, receiverAccount[0].uid, selectedRow.amount);
+
+      await this.deleteTransaction(selectedRow.transactionId);
+    }
   }
-}
 
+  async deleteTransaction(transactionId: string) 
+  {
+    await this.db.object('/transactions/' + transactionId).remove();
+  }
 
-async deleteTransaction(transactionId: string)
-{
-  await this.db.object('/transactions/' + transactionId).remove();
-}
+  async updateBalance(senderUid: string, receiverUid: string, amount: number) 
+  {
+    try 
+    {
+      const [senderData, receiverData]: any = await Promise.all([
+        this.db.object('/users/' + senderUid).valueChanges().pipe(take(1)).toPromise(),
+        this.db.object('/users/' + receiverUid).valueChanges().pipe(take(1)).toPromise(),
+      ]);
 
-async updateBalance(senderUid: string, receiverUid: string, amount: number)
-{
-  const [senderData, receiverData]: any = await Promise.all([
-    this.db.object('/users/' + senderUid).valueChanges().pipe(take(1)).toPromise(),
-    this.db.object('/users/' + receiverUid).valueChanges().pipe(take(1)).toPromise()
-  ]);
+      const newSenderBalance = senderData.balance + amount;
+      const newReceiverBalance = receiverData.balance - amount;
 
-  const newSenderBalance = senderData.balance + amount;
-  const newReceiverBalance = receiverData.balance - amount;
-
-  await Promise.all([
-    this.db.object('/users/' + senderUid).update({ balance: newSenderBalance }),
-    this.db.object('/users/' + receiverUid).update({ balance: newReceiverBalance })
-  ]);
-}
-
+      await Promise.all([
+        this.db.object('/users/' + senderUid).update({ balance: newSenderBalance }),
+        this.db.object('/users/' + receiverUid).update({ balance: newReceiverBalance }),
+      ]);
+    } catch (error) 
+    {
+      console.log('Error updating balance: ', error);
+    }
+  }
 }
