@@ -7,6 +7,7 @@ import {SelectionModel} from '@angular/cdk/collections';
 
 import { MatTableDataSource } from '@angular/material/table';
 import { iTransactions } from '../../../shared/models/iTransactions';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class TransactionsComponent implements OnInit{
 
   constructor( 
     private authService: AuthService,
-    private accountService: AccountService )
+    private accountService: AccountService,
+    private router: Router )
     {}
 
     ngOnInit(): void {
@@ -73,6 +75,8 @@ export class TransactionsComponent implements OnInit{
 
     this.accountService.revertTransactions(selectedTransactions)
     this.selection.clear();
+    
+    this.router.navigate(['/admin-dashboard'])
   }
   
 }
