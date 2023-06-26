@@ -42,6 +42,7 @@ export class AccountService implements OnInit {
       cardNumber: data.cardNumber,
       balance: data.balance,
       fullname: data.fullname,
+      isAdmin: false,
       uid: data.uid,
     });
   }
